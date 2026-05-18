@@ -1,0 +1,525 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>be1.ru</title>
+</head>
+<body>
+<p>&lt;!DOCTYPE html&gt;<br />
+&lt;html lang=&quot;ru&quot;&gt;<br />
+&lt;head&gt;<br />
+&nbsp; &nbsp; &lt;meta charset=&quot;UTF-8&quot;&gt;<br />
+&nbsp; &nbsp; &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot;&gt;<br />
+&nbsp; &nbsp; &lt;title&gt;한국어 카드 &mdash; Корейские карточки&lt;/title&gt;<br />
+&nbsp; &nbsp; &lt;!-- Подключаем React, ReactDOM и Babel для работы JSX прямо в браузере --&gt;<br />
+&nbsp; &nbsp; &lt;script src=&quot;https://unpkg.com/react@18/umd/react.production.min.js&quot; crossorigin&gt;&lt;/script&gt;<br />
+&nbsp; &nbsp; &lt;script src=&quot;https://unpkg.com/react-dom@18/umd/react-dom.production.min.js&quot; crossorigin&gt;&lt;/script&gt;<br />
+&nbsp; &nbsp; &lt;script src=&quot;https://unpkg.com/@babel/standalone/babel.min.js&quot;&gt;&lt;/script&gt;<br />
+&nbsp; &nbsp; &lt;style&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; /* Убираем лишние отступы и подсвечивание при нажатии на iOS */<br />
+&nbsp; &nbsp; &nbsp; &nbsp; body { margin: 0; padding: 0; background: #0a0a0f; -webkit-tap-highlight-color: transparent; }<br />
+&nbsp; &nbsp; &lt;/style&gt;<br />
+&lt;/head&gt;<br />
+&lt;body&gt;</p>
+
+<p>&nbsp; &nbsp; &lt;div id=&quot;root&quot;&gt;&lt;/div&gt;</p>
+
+<p>&nbsp; &nbsp; &lt;script type=&quot;text/babel&quot;&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; // Достаем хуки из глобального объекта React вместо импорта<br />
+&nbsp; &nbsp; &nbsp; &nbsp; const { useState, useRef, useEffect } = React;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; const WORDS = [<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // 사람 / Люди<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;저&quot;, ru: &quot;я (вежливо)&quot;, romanji: &quot;jeo&quot;, category: &quot;사람&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;나&quot;, ru: &quot;я (неформально)&quot;, romanji: &quot;na&quot;, category: &quot;사람&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;학생&quot;, ru: &quot;студент / ученик&quot;, romanji: &quot;haksaeng&quot;, category: &quot;사람&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;선생님&quot;, ru: &quot;учитель&quot;, romanji: &quot;seonsaengnim&quot;, category: &quot;사람&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;친구&quot;, ru: &quot;друг&quot;, romanji: &quot;chingu&quot;, category: &quot;사람&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;부모님&quot;, ru: &quot;родители&quot;, romanji: &quot;bumonim&quot;, category: &quot;사람&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;아버지&quot;, ru: &quot;отец (официально)&quot;, romanji: &quot;abeoji&quot;, category: &quot;사람&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;어머니&quot;, ru: &quot;мать (официально)&quot;, romanji: &quot;eomeoni&quot;, category: &quot;사람&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;아빠&quot;, ru: &quot;папа&quot;, romanji: &quot;appa&quot;, category: &quot;사람&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;엄ма&quot;, ru: &quot;мама&quot;, romanji: &quot;emma&quot;, category: &quot;사람&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;오빠&quot;, ru: &quot;старший брат (для девушки)&quot;, romanji: &quot;oppa&quot;, category: &quot;사람&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;언니&quot;, ru: &quot;старшая сестра (для девушки)&quot;, romanji: &quot;eonni&quot;, category: &quot;사람&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;형&quot;, ru: &quot;старший брат (для парня)&quot;, romanji: &quot;hyeong&quot;, category: &quot;사람&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;누나&quot;, ru: &quot;старшая сестра (для парня)&quot;, romanji: &quot;nuna&quot;, category: &quot;사람&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;동생&quot;, ru: &quot;младший брат или сестра&quot;, romanji: &quot;dongsaeng&quot;, category: &quot;사람&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;남자&quot;, ru: &quot;мужчина / мальчик&quot;, romanji: &quot;namja&quot;, category: &quot;사람&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;여자&quot;, ru: &quot;женщина / девушка&quot;, romanji: &quot;yeoja&quot;, category: &quot;사람&quot; },</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // 장소 / Места<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;집&quot;, ru: &quot;дом&quot;, romanji: &quot;jip&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;학교&quot;, ru: &quot;школа&quot;, romanji: &quot;hakgyo&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;병원&quot;, ru: &quot;больница&quot;, romanji: &quot;byeongwon&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;공원&quot;, ru: &quot;парк&quot;, romanji: &quot;gongwon&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;부엌&quot;, ru: &quot;кухня&quot;, romanji: &quot;bueok&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;교실&quot;, ru: &quot;класс / аудитория&quot;, romanji: &quot;gyosil&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;화장실&quot;, ru: &quot;туалет&quot;, romanji: &quot;hwajangsil&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;운동장&quot;, ru: &quot;спортплощадка&quot;, romanji: &quot;undongjang&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;도서관&quot;, ru: &quot;библиотека&quot;, romanji: &quot;doseogwan&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;식당&quot;, ru: &quot;столовая / ресторан&quot;, romanji: &quot;sikdang&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;가게&quot;, ru: &quot;магазин&quot;, romanji: &quot;gage&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;마트&quot;, ru: &quot;супермаркет&quot;, romanji: &quot;mateu&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;약국&quot;, ru: &quot;аптека&quot;, romanji: &quot;yakguk&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;은행&quot;, ru: &quot;банк&quot;, romanji: &quot;eunhaeng&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;우체국&quot;, ru: &quot;почта&quot;, romanji: &quot;ucheguk&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;편의점&quot;, ru: &quot;магазин 24 часа&quot;, romanji: &quot;pyeonuijeom&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;백화점&quot;, ru: &quot;универмаг&quot;, romanji: &quot;baekhwajeom&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;방&quot;, ru: &quot;комната&quot;, romanji: &quot;bang&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;거실&quot;, ru: &quot;гостиная&quot;, romanji: &quot;geosil&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;수영장&quot;, ru: &quot;бассейн&quot;, romanji: &quot;suyeongjang&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;동물원&quot;, ru: &quot;зоопарк&quot;, romanji: &quot;dongmurwon&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;놀이공원&quot;, ru: &quot;парк аттракционов&quot;, romanji: &quot;norigongwon&quot;, category: &quot;장소&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;공항&quot;, ru: &quot;аэропорт&quot;, romanji: &quot;gonghang&quot;, category: &quot;장소&quot; },</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // 물건 / Предметы<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;가방&quot;, ru: &quot;сумка&quot;, romanji: &quot;gabang&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;책&quot;, ru: &quot;книга&quot;, romanji: &quot;chaek&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;책상&quot;, ru: &quot;письменный стол&quot;, romanji: &quot;chaeksang&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;의자&quot;, ru: &quot;стул&quot;, romanji: &quot;uija&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;공책&quot;, ru: &quot;тетрадь&quot;, romanji: &quot;gongchaek&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;연필&quot;, ru: &quot;карандаш&quot;, romanji: &quot;yeonpil&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;지우개&quot;, ru: &quot;ластик&quot;, romanji: &quot;jiugae&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;시계&quot;, ru: &quot;часы&quot;, romanji: &quot;sigye&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;신문&quot;, ru: &quot;газета&quot;, romanji: &quot;sinmun&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;냉장고&quot;, ru: &quot;холодильник&quot;, romanji: &quot;naengjanggo&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;텔레비전&quot;, ru: &quot;телевизор&quot;, romanji: &quot;tellebijeon&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;컴퓨터&quot;, ru: &quot;компьютер&quot;, romanji: &quot;keompyuteo&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;전화&quot;, ru: &quot;телефон&quot;, romanji: &quot;jeonhwa&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;우산&quot;, ru: &quot;зонт&quot;, romanji: &quot;usan&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;인형&quot;, ru: &quot;кукла&quot;, romanji: &quot;inhyeong&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;선물&quot;, ru: &quot;подарок&quot;, romanji: &quot;seonmul&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;사진&quot;, ru: &quot;фотография&quot;, romanji: &quot;sajin&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;지도&quot;, ru: &quot;карта&quot;, romanji: &quot;jido&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;침대&quot;, ru: &quot;кровать&quot;, romanji: &quot;chimdae&quot;, category: &quot;물건&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;소파&quot;, ru: &quot;диван&quot;, romanji: &quot;sopa&quot;, category: &quot;물건&quot; },</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // 음식 / Еда<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;밥&quot;, ru: &quot;рис / еда&quot;, romanji: &quot;bap&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;빵&quot;, ru: &quot;хлеб / булка&quot;, romanji: &quot;ppang&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;물&quot;, ru: &quot;вода&quot;, romanji: &quot;mul&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;우유&quot;, ru: &quot;молоко&quot;, romanji: &quot;uyu&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;케이크&quot;, ru: &quot;торт&quot;, romanji: &quot;keikeu&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;과일&quot;, ru: &quot;фрукты&quot;, romanji: &quot;gwail&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;사과&quot;, ru: &quot;яблоко&quot;, romanji: &quot;sagwa&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;포도&quot;, ru: &quot;виноград&quot;, romanji: &quot;podo&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;오렌지&quot;, ru: &quot;апельсин&quot;, romanji: &quot;orenji&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;바나나&quot;, ru: &quot;банан&quot;, romanji: &quot;banana&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;김밥&quot;, ru: &quot;кимпаб рисовый рулет&quot;, romanji: &quot;gimbap&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;비빔밥&quot;, ru: &quot;пибимпаб смешанный рис&quot;, romanji: &quot;bibimbap&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;불고기&quot;, ru: &quot;пулькоги жареное мясо&quot;, romanji: &quot;bulgogi&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;김치&quot;, ru: &quot;кимчи острая капуста&quot;, romanji: &quot;kimchi&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;커피&quot;, ru: &quot;кофе&quot;, romanji: &quot;keopi&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;주스&quot;, ru: &quot;сок&quot;, romanji: &quot;juseu&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;음식&quot;, ru: &quot;еда (общее слово)&quot;, romanji: &quot;eumsik&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;점심&quot;, ru: &quot;обед&quot;, romanji: &quot;jeomsim&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;저녁&quot;, ru: &quot;ужин / вечер&quot;, romanji: &quot;jeonyeok&quot;, category: &quot;음식&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;아침&quot;, ru: &quot;завтрак / утро&quot;, romanji: &quot;achim&quot;, category: &quot;음식&quot; },</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // 동사 현재 / Глаголы настоящее<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;가요&quot;, ru: &quot;иду / идёт&quot;, romanji: &quot;gayo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;와요&quot;, ru: &quot;прихожу / приходит&quot;, romanji: &quot;wayo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;먹어요&quot;, ru: &quot;ем / ест&quot;, romanji: &quot;meogeoyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;마셔요&quot;, ru: &quot;пью / пьёт&quot;, romanji: &quot;masyeoyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;있어요&quot;, ru: &quot;есть / находится&quot;, romanji: &quot;isseoyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;없어요&quot;, ru: &quot;нет / отсутствует&quot;, romanji: &quot;eopseoyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;만나요&quot;, ru: &quot;встречаю / встречает&quot;, romanji: &quot;mannayo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;봐요&quot;, ru: &quot;смотрю / смотрит&quot;, romanji: &quot;bwayo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;해요&quot;, ru: &quot;делаю / делает&quot;, romanji: &quot;haeyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;공부해요&quot;, ru: &quot;учусь / учится&quot;, romanji: &quot;gongbuhaeyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;좋아해요&quot;, ru: &quot;люблю / любит&quot;, romanji: &quot;joahaeyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;만들어요&quot;, ru: &quot;создаю / создаёт&quot;, romanji: &quot;mandeureoyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;사요&quot;, ru: &quot;покупаю / покупает&quot;, romanji: &quot;sayo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;써요&quot;, ru: &quot;пишу / пишет&quot;, romanji: &quot;sseoyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;읽어요&quot;, ru: &quot;читаю / читает&quot;, romanji: &quot;ilgeoyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;자요&quot;, ru: &quot;сплю / спит&quot;, romanji: &quot;jayo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;일어나요&quot;, ru: &quot;встаю / встаёт&quot;, romanji: &quot;ireonayo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;앉아요&quot;, ru: &quot;сижу / сидит&quot;, romanji: &quot;anjayo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;말해요&quot;, ru: &quot;говорю / говорит&quot;, romanji: &quot;malhaeyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;들어요&quot;, ru: &quot;слушаю / слушает&quot;, romanji: &quot;deureoyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;가르쳐요&quot;, ru: &quot;обучаю / обучает&quot;, romanji: &quot;gareucheoyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;배워요&quot;, ru: &quot;учусь чему-то&quot;, romanji: &quot;baeweoyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;일해요&quot;, ru: &quot;работаю / работает&quot;, romanji: &quot;ilhaeyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;살아요&quot;, ru: &quot;живу / живёт&quot;, romanji: &quot;sarayo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;신어요&quot;, ru: &quot;надеваю обувь&quot;, romanji: &quot;sineoyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;입어요&quot;, ru: &quot;надеваю одежду&quot;, romanji: &quot;ibeoyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;씻어요&quot;, ru: &quot;мою / моет&quot;, romanji: &quot;ssiseoyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;찍어요&quot;, ru: &quot;фотографирую&quot;, romanji: &quot;jjigeoyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;빌려요&quot;, ru: &quot;берут / одалживает&quot;, romanji: &quot;billyeoyo&quot;, category: &quot;동사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;좋아요&quot;, ru: &quot;нравится / хорошо&quot;, romanji: &quot;joayo&quot;, category: &quot;동사&quot; },</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // 과거/미래 / Прошлое и будущее<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;갔어요&quot;, ru: &quot;пошёл / ушёл&quot;, romanji: &quot;gasseoyo&quot;, category: &quot;과거미래&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;왔어요&quot;, ru: &quot;пришёл&quot;, romanji: &quot;wasseoyo&quot;, category: &quot;과거미래&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;먹었어요&quot;, ru: &quot;поел / съел&quot;, romanji: &quot;meogeosseoyo&quot;, category: &quot;과거미래&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;했어요&quot;, ru: &quot;сделал&quot;, romanji: &quot;haesseoyo&quot;, category: &quot;과거미래&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;봤어요&quot;, ru: &quot;посмотрел&quot;, romanji: &quot;bwasseoyo&quot;, category: &quot;과거미래&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;만났어요&quot;, ru: &quot;встретил&quot;, romanji: &quot;mannasseoyo&quot;, category: &quot;과거미래&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;갈 거예요&quot;, ru: &quot;пойду / пойдёт&quot;, romanji: &quot;gal geoyeyo&quot;, category: &quot;과거미래&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;먹을 거예요&quot;, ru: &quot;поем / поест&quot;, romanji: &quot;meogeul geoyeyo&quot;, category: &quot;과거미래&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;할 거예요&quot;, ru: &quot;сделаю / сделает&quot;, romanji: &quot;hal geoyeyo&quot;, category: &quot;과거미래&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;볼 거예요&quot;, ru: &quot;посмотрю / посмотрит&quot;, romanji: &quot;bol geoyeyo&quot;, category: &quot;과거미래&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;살 거예요&quot;, ru: &quot;куплю / купит&quot;, romanji: &quot;sal geoyeyo&quot;, category: &quot;과거미래&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;있을 거예요&quot;, ru: &quot;буду / будет там&quot;, romanji: &quot;isseul geoyeyo&quot;, category: &quot;과거미래&quot; },</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // 형용사 / Прилагательные<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;커요&quot;, ru: &quot;большой&quot;, romanji: &quot;keoyo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;작아요&quot;, ru: &quot;маленький&quot;, romanji: &quot;jagayo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;많아요&quot;, ru: &quot;много&quot;, romanji: &quot;manayo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;적어요&quot;, ru: &quot;мало&quot;, romanji: &quot;jeogeoyo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;나빠요&quot;, ru: &quot;плохо / плохой&quot;, romanji: &quot;nappayo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;더워요&quot;, ru: &quot;жарко&quot;, romanji: &quot;deowoyo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;추워요&quot;, ru: &quot;холодно&quot;, romanji: &quot;chuwoyo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;따뜻해요&quot;, ru: &quot;тепло&quot;, romanji: &quot;ttatteutaeyo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;시원해요&quot;, ru: &quot;прохладно&quot;, romanji: &quot;siwonhaeyo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;예뻐요&quot;, ru: &quot;красивый&quot;, romanji: &quot;yeppeoyo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;맛있어요&quot;, ru: &quot;вкусно&quot;, romanji: &quot;masisseoyo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;맛없어요&quot;, ru: &quot;невкусно&quot;, romanji: &quot;maseopseoyo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;비싸요&quot;, ru: &quot;дорого&quot;, romanji: &quot;bissayo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;싸요&quot;, ru: &quot;дёшево&quot;, romanji: &quot;ssayo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;재미있어요&quot;, ru: &quot;интересно / весело&quot;, romanji: &quot;jaemiisseoyo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;바빠요&quot;, ru: &quot;занят&quot;, romanji: &quot;bappayo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;피곤해요&quot;, ru: &quot;устал&quot;, romanji: &quot;pigonhaeyo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;매워요&quot;, ru: &quot;острый о еде&quot;, romanji: &quot;maewoyo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;빨라요&quot;, ru: &quot;быстрый&quot;, romanji: &quot;ppallayo&quot;, category: &quot;형용사&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;느려요&quot;, ru: &quot;медленный&quot;, romanji: &quot;neuryeoyo&quot;, category: &quot;형용사&quot; },</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // 시간 / Время<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;오늘&quot;, ru: &quot;сегодня&quot;, romanji: &quot;oneul&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;내일&quot;, ru: &quot;завтра&quot;, romanji: &quot;naeil&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;어제&quot;, ru: &quot;вчера&quot;, romanji: &quot;eoje&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;지금&quot;, ru: &quot;сейчас&quot;, romanji: &quot;jigeum&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;나중에&quot;, ru: &quot;позже&quot;, romanji: &quot;najunge&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;방학&quot;, ru: &quot;каникулы&quot;, romanji: &quot;banghak&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;주말&quot;, ru: &quot;выходные&quot;, romanji: &quot;jumal&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;월요일&quot;, ru: &quot;понедельник&quot;, romanji: &quot;woryoil&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;화요일&quot;, ru: &quot;вторник&quot;, romanji: &quot;hwayoil&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;수요일&quot;, ru: &quot;среда&quot;, romanji: &quot;suyoil&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;목요일&quot;, ru: &quot;четверг&quot;, romanji: &quot;mogyoil&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;금요일&quot;, ru: &quot;пятница&quot;, romanji: &quot;geumyoil&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;토요일&quot;, ru: &quot;суббота&quot;, romanji: &quot;toyoil&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;일요일&quot;, ru: &quot;воскресенье&quot;, romanji: &quot;iryoil&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;시&quot;, ru: &quot;час (время)&quot;, romanji: &quot;si&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;분&quot;, ru: &quot;минута&quot;, romanji: &quot;bun&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;다음 주&quot;, ru: &quot;следующая неделя&quot;, romanji: &quot;daeum ju&quot;, category: &quot;시간&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;이번 주&quot;, ru: &quot;на этой неделе&quot;, romanji: &quot;ibeon ju&quot;, category: &quot;시간&quot; },</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // 숫자 / Числа<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;일&quot;, ru: &quot;1 китайско-корейское&quot;, romanji: &quot;il&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;이&quot;, ru: &quot;2 китайско-корейское&quot;, romanji: &quot;i&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;삼&quot;, ru: &quot;3 китайско-корейское&quot;, romanji: &quot;sam&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;사&quot;, ru: &quot;4 китайско-корейское&quot;, romanji: &quot;sa&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;오&quot;, ru: &quot;5 китайско-корейское&quot;, romanji: &quot;o&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;육&quot;, ru: &quot;6 китайско-корейское&quot;, romanji: &quot;yuk&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;칠&quot;, ru: &quot;7 китайско-корейское&quot;, romanji: &quot;chil&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;팔&quot;, ru: &quot;8 китайско-корейское&quot;, romanji: &quot;pal&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;구&quot;, ru: &quot;9 китайско-корейское&quot;, romanji: &quot;gu&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;십&quot;, ru: &quot;10 китайско-корейское&quot;, romanji: &quot;sip&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;하나&quot;, ru: &quot;1 исконно корейское&quot;, romanji: &quot;hana&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;둘&quot;, ru: &quot;2 исконно корейское&quot;, romanji: &quot;dul&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;셋&quot;, ru: &quot;3 исконно корейское&quot;, romanji: &quot;set&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;넷&quot;, ru: &quot;4 исконно корейское&quot;, romanji: &quot;net&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;다섯&quot;, ru: &quot;5 исконно корейское&quot;, romanji: &quot;daseot&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;여섯&quot;, ru: &quot;6 исконно корейское&quot;, romanji: &quot;yeoseot&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;일곱&quot;, ru: &quot;7 исконно корейское&quot;, romanji: &quot;ilgop&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;여덟&quot;, ru: &quot;8 исконно корейское&quot;, romanji: &quot;yeodeol&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;아홉&quot;, ru: &quot;9 исконно корейское&quot;, romanji: &quot;ahop&quot;, category: &quot;숫자&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;열&quot;, ru: &quot;10 исконно корейское&quot;, romanji: &quot;yeol&quot;, category: &quot;숫자&quot; },</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // 날씨/계절 / Погода и сезоны<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;날씨&quot;, ru: &quot;погода&quot;, romanji: &quot;nalsi&quot;, category: &quot;날씨&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;비&quot;, ru: &quot;дождь&quot;, romanji: &quot;bi&quot;, category: &quot;날씨&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;눈&quot;, ru: &quot;снег&quot;, romanji: &quot;nun&quot;, category: &quot;날씨&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;바람&quot;, ru: &quot;ветер&quot;, romanji: &quot;baram&quot;, category: &quot;날씨&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;구름&quot;, ru: &quot;облако&quot;, romanji: &quot;gureum&quot;, category: &quot;날씨&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;하늘&quot;, ru: &quot;небо&quot;, romanji: &quot;haneul&quot;, category: &quot;날씨&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;봄&quot;, ru: &quot;весна&quot;, romanji: &quot;bom&quot;, category: &quot;날씨&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;여름&quot;, ru: &quot;лето&quot;, romanji: &quot;yeoreum&quot;, category: &quot;날씨&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;가을&quot;, ru: &quot;осень&quot;, romanji: &quot;gaeul&quot;, category: &quot;날씨&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;겨울&quot;, ru: &quot;зима&quot;, romanji: &quot;gyeoul&quot;, category: &quot;날씨&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;계절&quot;, ru: &quot;сезон / время года&quot;, romanji: &quot;gyejeol&quot;, category: &quot;날씨&quot; },</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // 교통 / Траспорт<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;버스&quot;, ru: &quot;автобус&quot;, romanji: &quot;beoseu&quot;, category: &quot;교통&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;지하철&quot;, ru: &quot;метро&quot;, romanji: &quot;jihacheol&quot;, category: &quot;교통&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;택시&quot;, ru: &quot;такси&quot;, romanji: &quot;taeksi&quot;, category: &quot;교통&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;기차&quot;, ru: &quot;поезд&quot;, romanji: &quot;gicha&quot;, category: &quot;교통&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;비행기&quot;, ru: &quot;самолёт&quot;, romanji: &quot;bihaenggi&quot;, category: &quot;교통&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;자전거&quot;, ru: &quot;велосипед&quot;, romanji: &quot;jajeongeo&quot;, category: &quot;교통&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;자동차&quot;, ru: &quot;машина&quot;, romanji: &quot;jadongcha&quot;, category: &quot;교통&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;배&quot;, ru: &quot;корабль / лодка&quot;, romanji: &quot;bae&quot;, category: &quot;교통&quot; },</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // 신체 / Тело<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;머리&quot;, ru: &quot;голова / волосы&quot;, romanji: &quot;meori&quot;, category: &quot;신체&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;얼굴&quot;, ru: &quot;лицо&quot;, romanji: &quot;eolgul&quot;, category: &quot;신체&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;눈&quot;, ru: &quot;глаза&quot;, romanji: &quot;nun&quot;, category: &quot;신체&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;코&quot;, ru: &quot;нос&quot;, romanji: &quot;ko&quot;, category: &quot;신체&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;입&quot;, ru: &quot;рот&quot;, romanji: &quot;ip&quot;, category: &quot;신체&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;귀&quot;, ru: &quot;ухо&quot;, romanji: &quot;gwi&quot;, category: &quot;신체&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;손&quot;, ru: &quot;рука кисть&quot;, romanji: &quot;son&quot;, category: &quot;신체&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;발&quot;, ru: &quot;нога стопа&quot;, romanji: &quot;bal&quot;, category: &quot;신체&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;배&quot;, ru: &quot;живот&quot;, romanji: &quot;bae&quot;, category: &quot;신체&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;등&quot;, ru: &quot;спина&quot;, romanji: &quot;deung&quot;, category: &quot;신체&quot; },</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // 옷 / Одежда<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;옷&quot;, ru: &quot;одежда&quot;, romanji: &quot;ot&quot;, category: &quot;옷&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;바지&quot;, ru: &quot;брюки&quot;, romanji: &quot;baji&quot;, category: &quot;옷&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;치마&quot;, ru: &quot;юбка&quot;, romanji: &quot;chima&quot;, category: &quot;옷&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;셔츠&quot;, ru: &quot;рубашка&quot;, romanji: &quot;syeocheu&quot;, category: &quot;옷&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;신발&quot;, ru: &quot;обувь&quot;, romanji: &quot;sinbal&quot;, category: &quot;옷&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;운동화&quot;, ru: &quot;кроссовки&quot;, romanji: &quot;undonghwa&quot;, category: &quot;옷&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;모자&quot;, ru: &quot;шапка / кепка&quot;, romanji: &quot;moja&quot;, category: &quot;옷&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;구두&quot;, ru: &quot;туфли&quot;, romanji: &quot;gudu&quot;, category: &quot;옷&quot; },</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // 운동 / Спорт<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;축구&quot;, ru: &quot;футбол&quot;, romanji: &quot;chukgu&quot;, category: &quot;운동&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;농구&quot;, ru: &quot;баскетбол&quot;, romanji: &quot;nonggu&quot;, category: &quot;운동&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;수영&quot;, ru: &quot;плавание&quot;, romanji: &quot;suyeong&quot;, category: &quot;운동&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;운동&quot;, ru: &quot;спорт / упражнение&quot;, romanji: &quot;undong&quot;, category: &quot;운동&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;등산&quot;, ru: &quot;поход в горы&quot;, romanji: &quot;deungsan&quot;, category: &quot;운동&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;테니스&quot;, ru: &quot;теннис&quot;, romanji: &quot;teniseu&quot;, category: &quot;운동&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;탁구&quot;, ru: &quot;настольный теннис&quot;, romanji: &quot;takgu&quot;, category: &quot;운동&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;줄넘기&quot;, ru: &quot;прыжки со скакалкой&quot;, romanji: &quot;julneomgi&quot;, category: &quot;운동&quot; },</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // 위치 / Местоположение<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;위&quot;, ru: &quot;наверху / над&quot;, romanji: &quot;wi&quot;, category: &quot;위치&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;아래&quot;, ru: &quot;внизу / под&quot;, romanji: &quot;arae&quot;, category: &quot;위치&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;앞&quot;, ru: &quot;впереди / перед&quot;, romanji: &quot;ap&quot;, category: &quot;위치&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;뒤&quot;, ru: &quot;сзади / за&quot;, romanji: &quot;dwi&quot;, category: &quot;위치&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;옆&quot;, ru: &quot;рядом / сбоку&quot;, romanji: &quot;yeop&quot;, category: &quot;위치&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;안&quot;, ru: &quot;внутри / в&quot;, romanji: &quot;an&quot;, category: &quot;위치&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;밖&quot;, ru: &quot;снаружи / вне&quot;, romanji: &quot;bak&quot;, category: &quot;위치&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;오른쪽&quot;, ru: &quot;правая сторона&quot;, romanji: &quot;oreunjjok&quot;, category: &quot;위치&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;왼쪽&quot;, ru: &quot;левая сторона&quot;, romanji: &quot;oenjjok&quot;, category: &quot;위치&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;사이&quot;, ru: &quot;между&quot;, romanji: &quot;sai&quot;, category: &quot;위치&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;층&quot;, ru: &quot;этаж&quot;, romanji: &quot;cheung&quot;, category: &quot;위치&quot; },</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // 표현/부사 / Фразы и наречия<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;네&quot;, ru: &quot;да&quot;, romanji: &quot;ne&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;아니요&quot;, ru: &quot;нет&quot;, romanji: &quot;aniyo&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;안녕하세요&quot;, ru: &quot;здравствуйте&quot;, romanji: &quot;annyeonghaseyo&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;감사합니다&quot;, ru: &quot;спасибо&quot;, romanji: &quot;gamsahamnida&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;죄송합니다&quot;, ru: &quot;извините&quot;, romanji: &quot;joesonghamnida&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;어디&quot;, ru: &quot;где&quot;, romanji: &quot;eodi&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;뭐&quot;, ru: &quot;что&quot;, romanji: &quot;mwo&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;누구&quot;, ru: &quot;кто&quot;, romanji: &quot;nugu&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;언제&quot;, ru: &quot;когда&quot;, romanji: &quot;eonje&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;왜&quot;, ru: &quot;почему&quot;, romanji: &quot;wae&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;어떻게&quot;, ru: &quot;как&quot;, romanji: &quot;eotteoke&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;얼마나&quot;, ru: &quot;насколько / сколько&quot;, romanji: &quot;eolmana&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;몇&quot;, ru: &quot;сколько штук&quot;, romanji: &quot;myeot&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;같이&quot;, ru: &quot;вместе&quot;, romanji: &quot;gachi&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;정말&quot;, ru: &quot;правда / очень&quot;, romanji: &quot;jeongmal&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;조금&quot;, ru: &quot;немного&quot;, romanji: &quot;jogeum&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;아주&quot;, ru: &quot;очень&quot;, romanji: &quot;aju&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;그래서&quot;, ru: &quot;поэтому&quot;, romanji: &quot;geuraeseo&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;그리고&quot;, ru: &quot;и / а также&quot;, romanji: &quot;geurigo&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;하지만&quot;, ru: &quot;но / однако&quot;, romanji: &quot;hajiman&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;그런데&quot;, ru: &quot;но / кстати&quot;, romanji: &quot;geureonde&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;안&quot;, ru: &quot;не (отрицание)&quot;, romanji: &quot;an&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;못&quot;, ru: &quot;не могу (отрицание)&quot;, romanji: &quot;mot&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;도&quot;, ru: &quot;тоже / также&quot;, romanji: &quot;do&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { kr: &quot;만&quot;, ru: &quot;только&quot;, romanji: &quot;man&quot;, category: &quot;표현&quot; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; ];</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; const CATEGORIES = [&quot;전체&quot;,&quot;사람&quot;,&quot;장소&quot;,&quot;물건&quot;,&quot;음식&quot;,&quot;동사&quot;,&quot;과거미래&quot;,&quot;형용사&quot;,&quot;시간&quot;,&quot;숫자&quot;,&quot;날씨&quot;,&quot;교통&quot;,&quot;신체&quot;,&quot;옷&quot;,&quot;운동&quot;,&quot;위치&quot;,&quot;표현&quot;];<br />
+&nbsp; &nbsp; &nbsp; &nbsp; const CAT_LABELS = { 전체:&quot;Все&quot;, 사람:&quot;Люди&quot;, 장소:&quot;Места&quot;, 물건:&quot;Предметы&quot;, 음식:&quot;Еда&quot;, 동사:&quot;Глаголы&quot;, 과거미래:&quot;Прош/Буд&quot;, 형용사:&quot;Прилаг.&quot;, 시간:&quot;Время&quot;, 숫자:&quot;Числа&quot;, 날씨:&quot;Погода&quot;, 교통:&quot;Транспорт&quot;, 신체:&quot;Тело&quot;, 옷:&quot;Одежда&quot;, 운동:&quot;Спорт&quot;, 위치:&quot;Место&quot;, 표현:&quot;Фразы&quot; };</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; function shuffle(arr) { return [...arr].sort(() =&gt; Math.random() - 0.5); }</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; function App() {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const [screen, setScreen] = useState(&quot;home&quot;);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const [category, setCategory] = useState(&quot;전체&quot;);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const [words, setWords] = useState([]);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const [cardIndex, setCardIndex] = useState(0);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const [flipped, setFlipped] = useState(false);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const [quizWords, setQuizWords] = useState([]);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const [quizIndex, setQuizIndex] = useState(0);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const [input, setInput] = useState(&quot;&quot;);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const [answered, setAnswered] = useState(null);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const [score, setScore] = useState(0);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const [mistakes, setMistakes] = useState([]);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const [showRomanji, setShowRomanji] = useState(true);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const inputRef = useRef(null);</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const filtered = category === &quot;전체&quot; ? WORDS : WORDS.filter(w =&gt; w.category === category);</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; function startCards() { setWords(shuffle(filtered)); setCardIndex(0); setFlipped(false); setScreen(&quot;cards&quot;); }<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; function startQuiz() { setQuizWords(shuffle(filtered)); setQuizIndex(0); setInput(&quot;&quot;); setAnswered(null); setScore(0); setMistakes([]); setScreen(&quot;quiz&quot;); setTimeout(() =&gt; inputRef.current?.focus(), 300); }<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; function nextCard() { setFlipped(false); setTimeout(() =&gt; setCardIndex(i =&gt; (i+1)%words.length), 120); }<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; function prevCard() { setFlipped(false); setTimeout(() =&gt; setCardIndex(i =&gt; (i-1+words.length)%words.length), 120); }<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; function checkAnswer() {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if (!input.trim()) return;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const isCorrect = input.trim() === quizWords[quizIndex].kr;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; setAnswered(isCorrect ? &quot;correct&quot; : &quot;wrong&quot;);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if (isCorrect) setScore(s =&gt; s+1);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else setMistakes(m =&gt; [...m, { ...quizWords[quizIndex], typed: input.trim() }]);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; function nextQuiz() {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if (quizIndex+1 &gt;= quizWords.length) { setScreen(&quot;result&quot;); return; }<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; setQuizIndex(i =&gt; i+1); setInput(&quot;&quot;); setAnswered(null);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; setTimeout(() =&gt; inputRef.current?.focus(), 100);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const pct = words.length ? Math.round(((cardIndex+1)/words.length)*100) : 0;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // HOME<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if (screen === &quot;home&quot;) return (<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ minHeight:&quot;100vh&quot;, background:&quot;#0a0a0f&quot;, fontFamily:&quot;&#39;Noto Sans KR&#39;,sans-serif&quot;, display:&quot;flex&quot;, flexDirection:&quot;column&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&amp;display=swap&quot; rel=&quot;stylesheet&quot;/&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ background:&quot;linear-gradient(160deg,#12122a,#1a1040)&quot;, padding:&quot;44px 20px 28px&quot;, textAlign:&quot;center&quot;, borderBottom:&quot;1px solid rgba(255,255,255,0.05)&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ fontSize:44 }}&gt;🇰🇷&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ fontSize:26, fontWeight:900, color:&quot;#fff&quot;, marginTop:6 }}&gt;한국어 카드&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ fontSize:12, color:&quot;rgba(255,255,255,0.35)&quot;, marginTop:4 }}&gt;{WORDS.length} слов &middot; Экзамен 1단계&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ padding:&quot;18px 16px 0&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ fontSize:10, color:&quot;rgba(255,255,255,0.3)&quot;, letterSpacing:1, textTransform:&quot;uppercase&quot;, marginBottom:8 }}&gt;Категория&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ display:&quot;flex&quot;, gap:6, flexWrap:&quot;wrap&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {CATEGORIES.map(cat =&gt; (<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;button key={cat} onClick={() =&gt; setCategory(cat)} style={{ padding:&quot;6px 12px&quot;, borderRadius:20, border:&quot;none&quot;, cursor:&quot;pointer&quot;, fontSize:11, fontWeight:700, fontFamily:&quot;inherit&quot;, background:category===cat?&quot;#7c3aed&quot;:&quot;rgba(255,255,255,0.07)&quot;, color:category===cat?&quot;#fff&quot;:&quot;rgba(255,255,255,0.45)&quot;, transition:&quot;all 0.15s&quot; }}&gt;{CAT_LABELS[cat]}&lt;/button&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ))}<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ padding:&quot;14px 16px 0&quot;, display:&quot;flex&quot;, alignItems:&quot;center&quot;, gap:10 }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div onClick={() =&gt; setShowRomanji(s=&gt;!s)} style={{ width:40, height:22, borderRadius:11, cursor:&quot;pointer&quot;, background:showRomanji?&quot;#7c3aed&quot;:&quot;rgba(255,255,255,0.12)&quot;, position:&quot;relative&quot;, transition:&quot;background 0.2s&quot;, flexShrink:0 }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ position:&quot;absolute&quot;, top:3, left:showRomanji?21:3, width:16, height:16, borderRadius:&quot;50%&quot;, background:&quot;#fff&quot;, transition:&quot;left 0.2s&quot; }}/&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;span style={{ color:&quot;rgba(255,255,255,0.4)&quot;, fontSize:12 }}&gt;Показывать произношение&lt;/span&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ padding:&quot;20px 16px 0&quot;, display:&quot;flex&quot;, flexDirection:&quot;column&quot;, gap:10 }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;button onClick={startCards} style={{ width:&quot;100%&quot;, padding:&quot;17px&quot;, borderRadius:14, border:&quot;none&quot;, background:&quot;linear-gradient(135deg,#7c3aed,#5b21b6)&quot;, color:&quot;#fff&quot;, fontSize:16, fontWeight:700, cursor:&quot;pointer&quot;, fontFamily:&quot;inherit&quot;, boxShadow:&quot;0 4px 20px rgba(124,58,237,0.4)&quot; }}&gt;📚 Карточки &mdash; учить слова&lt;/button&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;button onClick={startQuiz} style={{ width:&quot;100%&quot;, padding:&quot;17px&quot;, borderRadius:14, border:&quot;1px solid rgba(255,255,255,0.1)&quot;, background:&quot;rgba(255,255,255,0.05)&quot;, color:&quot;#fff&quot;, fontSize:16, fontWeight:700, cursor:&quot;pointer&quot;, fontFamily:&quot;inherit&quot; }}&gt;✍️ Тест &mdash; писать по-корейски&lt;/button&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ margin:&quot;16px 16px 0&quot;, padding:&quot;12px 16px&quot;, borderRadius:12, background:&quot;rgba(124,58,237,0.08)&quot;, border:&quot;1px solid rgba(124,58,237,0.2)&quot;, color:&quot;rgba(255,255,255,0.4)&quot;, fontSize:12, textAlign:&quot;center&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Выбрано: &lt;span style={{ color:&quot;#a78bfa&quot;, fontWeight:700 }}&gt;{filtered.length}&lt;/span&gt; слов из &lt;span style={{ color:&quot;#a78bfa&quot;, fontWeight:700 }}&gt;{WORDS.length}&lt;/span&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; );</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // CARDS<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if (screen === &quot;cards&quot;) {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const word = words[cardIndex];<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; return (<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ minHeight:&quot;100vh&quot;, background:&quot;#0a0a0f&quot;, fontFamily:&quot;&#39;Noto Sans KR&#39;,sans-serif&quot;, display:&quot;flex&quot;, flexDirection:&quot;column&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&amp;display=swap&quot; rel=&quot;stylesheet&quot;/&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ display:&quot;flex&quot;, alignItems:&quot;center&quot;, padding:&quot;20px 16px 12px&quot;, gap:10 }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;button onClick={() =&gt; setScreen(&quot;home&quot;)} style={{ background:&quot;rgba(255,255,255,0.07)&quot;, border:&quot;none&quot;, borderRadius:10, color:&quot;#fff&quot;, padding:&quot;8px 14px&quot;, cursor:&quot;pointer&quot;, fontSize:13, fontFamily:&quot;inherit&quot; }}&gt;&larr; Назад&lt;/button&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ flex:1, height:3, borderRadius:2, background:&quot;rgba(255,255,255,0.08)&quot;, overflow:&quot;hidden&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ height:&quot;100%&quot;, width:`${pct}%`, background:&quot;#7c3aed&quot;, transition:&quot;width 0.3s&quot; }}/&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ color:&quot;rgba(255,255,255,0.4)&quot;, fontSize:12, whiteSpace:&quot;nowrap&quot; }}&gt;{cardIndex+1}/{words.length}&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ flex:1, display:&quot;flex&quot;, flexDirection:&quot;column&quot;, alignItems:&quot;center&quot;, justifyContent:&quot;center&quot;, padding:&quot;0 20px&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div onClick={() =&gt; setFlipped(f=&gt;!f)} style={{ width:&quot;100%&quot;, minHeight:270, background:flipped?&quot;linear-gradient(135deg,#0d2b1a,#1a3a2a)&quot;:&quot;linear-gradient(135deg,#12122a,#1a1040)&quot;, borderRadius:22, display:&quot;flex&quot;, flexDirection:&quot;column&quot;, alignItems:&quot;center&quot;, justifyContent:&quot;center&quot;, cursor:&quot;pointer&quot;, padding:&quot;36px 24px&quot;, border:flipped?&quot;2px solid rgba(52,211,153,0.3)&quot;:&quot;2px solid rgba(124,58,237,0.25)&quot;, transition:&quot;all 0.2s&quot;, boxShadow:&quot;0 12px 40px rgba(0,0,0,0.5)&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {!flipped ? (<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ fontSize:10, color:&quot;rgba(255,255,255,0.25)&quot;, letterSpacing:2, textTransform:&quot;uppercase&quot;, marginBottom:14 }}&gt;{CAT_LABELS[word.category]}&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ fontSize:54, fontWeight:900, color:&quot;#fff&quot;, letterSpacing:-2, textAlign:&quot;center&quot; }}&gt;{word.kr}&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {showRomanji &amp;&amp; &lt;div style={{ fontSize:15, color:&quot;rgba(255,255,255,0.3)&quot;, marginTop:10, fontStyle:&quot;italic&quot; }}&gt;[{word.romanji}]&lt;/div&gt;}<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ marginTop:22, fontSize:11, color:&quot;rgba(255,255,255,0.15)&quot; }}&gt;нажми чтобы перевернуть&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ) : (<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ fontSize:10, color:&quot;rgba(52,211,153,0.5)&quot;, letterSpacing:2, textTransform:&quot;uppercase&quot;, marginBottom:14 }}&gt;Перевод&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ fontSize:26, fontWeight:700, color:&quot;#34d399&quot;, textAlign:&quot;center&quot;, lineHeight:1.4 }}&gt;{word.ru}&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ marginTop:18, fontSize:36, fontWeight:900, color:&quot;rgba(255,255,255,0.1)&quot; }}&gt;{word.kr}&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; )}<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ display:&quot;flex&quot;, gap:10, marginTop:20, width:&quot;100%&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;button onClick={prevCard} style={{ flex:1, padding:&quot;15px&quot;, borderRadius:12, border:&quot;1px solid rgba(255,255,255,0.08)&quot;, background:&quot;rgba(255,255,255,0.04)&quot;, color:&quot;#fff&quot;, fontSize:18, cursor:&quot;pointer&quot; }}&gt;&larr;&lt;/button&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;button onClick={() =&gt; setFlipped(f=&gt;!f)} style={{ flex:2, padding:&quot;15px&quot;, borderRadius:12, border:&quot;none&quot;, background:&quot;rgba(255,255,255,0.04)&quot;, color:&quot;rgba(255,255,255,0.4)&quot;, fontSize:12, cursor:&quot;pointer&quot;, fontFamily:&quot;inherit&quot; }}&gt;перевернуть&lt;/button&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;button onClick={nextCard} style={{ flex:1, padding:&quot;15px&quot;, borderRadius:12, border:&quot;1px solid rgba(255,255,255,0.08)&quot;, background:&quot;rgba(255,255,255,0.04)&quot;, color:&quot;#fff&quot;, fontSize:18, cursor:&quot;pointer&quot; }}&gt;&rarr;&lt;/button&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; );<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // QUIZ<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if (screen === &quot;quiz&quot;) {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const word = quizWords[quizIndex];<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const qpct = Math.round((quizIndex/quizWords.length)*100);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; return (<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ minHeight:&quot;100vh&quot;, background:&quot;#0a0a0f&quot;, fontFamily:&quot;&#39;Noto Sans KR&#39;,sans-serif&quot;, display:&quot;flex&quot;, flexDirection:&quot;column&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&amp;display=swap&quot; rel=&quot;stylesheet&quot;/&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ display:&quot;flex&quot;, alignItems:&quot;center&quot;, padding:&quot;20px 16px 12px&quot;, gap:10 }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;button onClick={() =&gt; setScreen(&quot;home&quot;)} style={{ background:&quot;rgba(255,255,255,0.07)&quot;, border:&quot;none&quot;, borderRadius:10, color:&quot;#fff&quot;, padding:&quot;8px 14px&quot;, cursor:&quot;pointer&quot;, fontSize:13, fontFamily:&quot;inherit&quot; }}&gt;&larr; Назад&lt;/button&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ flex:1, height:3, borderRadius:2, background:&quot;rgba(255,255,255,0.08)&quot;, overflow:&quot;hidden&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ height:&quot;100%&quot;, width:`${qpct}%`, background:&quot;#7c3aed&quot;, transition:&quot;width 0.3s&quot; }}/&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ color:&quot;#34d399&quot;, fontSize:13, fontWeight:700, whiteSpace:&quot;nowrap&quot; }}&gt;{score}✓&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ flex:1, display:&quot;flex&quot;, flexDirection:&quot;column&quot;, padding:&quot;0 16px 20px&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ borderRadius:18, padding:&quot;28px 20px&quot;, textAlign:&quot;center&quot;, marginBottom:16, background:&quot;linear-gradient(135deg,#12122a,#1a1040)&quot;, border:&quot;1px solid rgba(124,58,237,0.2)&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ fontSize:10, color:&quot;rgba(255,255,255,0.25)&quot;, letterSpacing:2, marginBottom:8, textTransform:&quot;uppercase&quot; }}&gt;{quizIndex+1}/{quizWords.length} &middot; {CAT_LABELS[word.category]}&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ fontSize:13, color:&quot;rgba(255,255,255,0.4)&quot;, marginBottom:6 }}&gt;Напиши по-корейски:&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ fontSize:32, fontWeight:900, color:&quot;#fff&quot;, lineHeight:1.2 }}&gt;{word.ru}&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {showRomanji &amp;&amp; &lt;div style={{ fontSize:13, color:&quot;rgba(255,255,255,0.2)&quot;, marginTop:8, fontStyle:&quot;italic&quot; }}&gt;[{word.romanji}]&lt;/div&gt;}<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;input ref={inputRef} value={input} onChange={e=&gt;setInput(e.target.value)}<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; onKeyDown={e=&gt;{ if(e.key===&quot;Enter&quot;) answered ? nextQuiz() : checkAnswer(); }}<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; disabled={!!answered} placeholder=&quot;한국어로 써요...&quot;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; style={{ width:&quot;100%&quot;, padding:&quot;16px&quot;, borderRadius:14, boxSizing:&quot;border-box&quot;, background:answered===&quot;correct&quot;?&quot;rgba(52,211,153,0.12)&quot;:answered===&quot;wrong&quot;?&quot;rgba(239,68,68,0.12)&quot;:&quot;rgba(255,255,255,0.07)&quot;, color:&quot;#fff&quot;, fontSize:28, fontWeight:700, fontFamily:&quot;inherit&quot;, textAlign:&quot;center&quot;, outline:&quot;none&quot;, border:answered===&quot;correct&quot;?&quot;2px solid rgba(52,211,153,0.4)&quot;:answered===&quot;wrong&quot;?&quot;2px solid rgba(239,68,68,0.4)&quot;:&quot;2px solid transparent&quot;, transition:&quot;all 0.2s&quot; }}<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; /&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {answered &amp;&amp; (<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ marginTop:12, padding:&quot;14px 16px&quot;, borderRadius:12, textAlign:&quot;center&quot;, background:answered===&quot;correct&quot;?&quot;rgba(52,211,153,0.1)&quot;:&quot;rgba(239,68,68,0.1)&quot;, border:`1px solid ${answered===&quot;correct&quot;?&quot;rgba(52,211,153,0.25)&quot;:&quot;rgba(239,68,68,0.25)&quot;}` }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {answered===&quot;correct&quot;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ? &lt;div style={{ color:&quot;#34d399&quot;, fontWeight:700, fontSize:17 }}&gt;✓ Правильно!&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; : &lt;&gt;&lt;div style={{ color:&quot;#f87171&quot;, fontWeight:700, fontSize:15 }}&gt;✗ Неправильно&lt;/div&gt;&lt;div style={{ color:&quot;rgba(255,255,255,0.35)&quot;, fontSize:12, marginTop:3 }}&gt;Правильный ответ:&lt;/div&gt;&lt;div style={{ color:&quot;#fff&quot;, fontWeight:900, fontSize:30, marginTop:2 }}&gt;{word.kr}&lt;/div&gt;&lt;/&gt;}<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; )}<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ flex:1 }}/&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;button onClick={answered ? nextQuiz : checkAnswer} style={{ width:&quot;100%&quot;, padding:&quot;17px&quot;, borderRadius:14, border:&quot;none&quot;, background:answered?&quot;linear-gradient(135deg,#34d399,#059669)&quot;:&quot;linear-gradient(135deg,#7c3aed,#5b21b6)&quot;, color:&quot;#fff&quot;, fontSize:16, fontWeight:700, cursor:&quot;pointer&quot;, fontFamily:&quot;inherit&quot;, boxShadow:answered?&quot;0 4px 20px rgba(52,211,153,0.25)&quot;:&quot;0 4px 20px rgba(124,58,237,0.35)&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {answered ? (quizIndex+1&gt;=quizWords.length ? &quot;Результат &rarr;&quot; : &quot;Дальше &rarr;&quot;) : &quot;Проверить ✓&quot;}<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/button&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; );<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // RESULT<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if (screen === &quot;result&quot;) {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const total = quizWords.length;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; const pctScore = Math.round((score/total)*100);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; return (<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ minHeight:&quot;100vh&quot;, background:&quot;#0a0a0f&quot;, fontFamily:&quot;&#39;Noto Sans KR&#39;,sans-serif&quot;, display:&quot;flex&quot;, flexDirection:&quot;column&quot;, alignItems:&quot;center&quot;, padding:&quot;36px 16px 40px&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&amp;display=swap&quot; rel=&quot;stylesheet&quot;/&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ fontSize:56 }}&gt;{pctScore&gt;=80?&quot;🔥&quot;:pctScore&gt;=60?&quot;💪&quot;:&quot;📚&quot;}&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ fontSize:24, fontWeight:900, color:&quot;#fff&quot;, marginTop:8 }}&gt;{score} / {total}&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ fontSize:44, fontWeight:900, color:pctScore&gt;=70?&quot;#34d399&quot;:&quot;#f87171&quot;, margin:&quot;4px 0&quot; }}&gt;{pctScore}%&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ fontSize:13, color:&quot;rgba(255,255,255,0.35)&quot;, marginBottom:24 }}&gt;{pctScore&gt;=70?&quot;Отлично! 화이팅! 💪&quot;:&quot;Повтори ошибки и попробуй снова!&quot;}&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {mistakes.length&gt;0 &amp;&amp; (<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ width:&quot;100%&quot;, marginBottom:20 }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ fontSize:11, color:&quot;rgba(255,255,255,0.3)&quot;, marginBottom:10, letterSpacing:1, textTransform:&quot;uppercase&quot; }}&gt;Ошибки ({mistakes.length})&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ display:&quot;flex&quot;, flexDirection:&quot;column&quot;, gap:7 }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {mistakes.map((m,i) =&gt; (<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div key={i} style={{ background:&quot;rgba(239,68,68,0.07)&quot;, border:&quot;1px solid rgba(239,68,68,0.18)&quot;, borderRadius:12, padding:&quot;10px 14px&quot;, display:&quot;flex&quot;, justifyContent:&quot;space-between&quot;, alignItems:&quot;center&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div&gt;&lt;div style={{ color:&quot;rgba(255,255,255,0.35)&quot;, fontSize:11 }}&gt;{m.ru}&lt;/div&gt;&lt;div style={{ color:&quot;#fff&quot;, fontWeight:700, fontSize:20 }}&gt;{m.kr}&lt;/div&gt;&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ textAlign:&quot;right&quot; }}&gt;&lt;div style={{ color:&quot;rgba(255,255,255,0.25)&quot;, fontSize:10 }}&gt;Ты написал:&lt;/div&gt;&lt;div style={{ color:&quot;#f87171&quot;, fontWeight:700 }}&gt;{m.typed||&quot;&mdash;&quot;}&lt;/div&gt;&lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ))}<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; )}<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;div style={{ display:&quot;flex&quot;, flexDirection:&quot;column&quot;, gap:10, width:&quot;100%&quot; }}&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;button onClick={startQuiz} style={{ width:&quot;100%&quot;, padding:&quot;16px&quot;, borderRadius:13, border:&quot;none&quot;, background:&quot;linear-gradient(135deg,#7c3aed,#5b21b6)&quot;, color:&quot;#fff&quot;, fontSize:15, fontWeight:700, cursor:&quot;pointer&quot;, fontFamily:&quot;inherit&quot; }}&gt;🔄 Попробовать снова&lt;/button&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;button onClick={() =&gt; setScreen(&quot;home&quot;)} style={{ width:&quot;100%&quot;, padding:&quot;16px&quot;, borderRadius:13, border:&quot;1px solid rgba(255,255,255,0.1)&quot;, background:&quot;rgba(255,255,255,0.05)&quot;, color:&quot;#fff&quot;, fontSize:15, fontWeight:700, cursor:&quot;pointer&quot;, fontFamily:&quot;inherit&quot; }}&gt;&larr; На главную&lt;/button&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; );<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }<br />
+&nbsp; &nbsp; &nbsp; &nbsp; }</p>
+
+<p>&nbsp; &nbsp; &nbsp; &nbsp; // Рендерим приложение в root-директорию<br />
+&nbsp; &nbsp; &nbsp; &nbsp; const root = WebpackReactDOM = ReactDOM.createRoot(document.getElementById(&#39;root&#39;));<br />
+&nbsp; &nbsp; &nbsp; &nbsp; root.render(&lt;App /&gt;);<br />
+&nbsp; &nbsp; &lt;/script&gt;<br />
+&lt;/body&gt;<br />
+&lt;/html&gt;</p>
+</body>
+</html>
